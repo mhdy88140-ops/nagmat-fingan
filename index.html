@@ -33,13 +33,19 @@
         /* لوحة التحكم والآدمن */
         .admin-panel-trigger { text-align: center; padding: 15px; background: #f1f1f1; margin: 20px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .admin-content { background: white; padding: 20px; width: 90%; max-width: 400px; border-radius: 8px; }
+        .admin-content { background: white; padding: 20px; width: 90%; max-width: 400px; border-radius: 8px; max-height: 90vh; overflow-y: auto; }
         .admin-content input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px; }
         .admin-content button { background: #000; color: #fff; border: none; padding: 10px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         
+        .file-upload-label { display: block; background: #f0f0f0; border: 1px dashed #999; padding: 10px; text-align: center; border-radius: 4px; margin: 8px 0; cursor: pointer; font-size: 13px; color: #555; }
+        
+        /* إدارة المنتجات في لوحة التحكم */
+        .admin-product-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+        .delete-btn { background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+
         /* القائمة الجانبية والشريط السفلي */
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-top: 1px solid #ddd; display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; }
-        .nav-item { text-align: center; text-decoration: none; color: #333; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .nav-item { text-align: center; text-decoration: none; color: #333; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
         
         .drawer { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: #fff; box-shadow: -2px 0 5px rgba(0,0,0,0.1); transition: 0.3s; z-index: 1100; padding: 20px; overflow-y: auto; }
         .drawer.open { right: 0; }
@@ -58,11 +64,11 @@
 
     <div class="main-header">
         <div class="header-icons">
-            <span>🔍</span>
-            <span>🛒</span>
+            <span onclick="alert('خاصية البحث جاهزة للاستخدام')">🔍</span>
+            <span onclick="alert('عربة التسوق فارغة حالياً')">🛒</span>
         </div>
         <div class="logo">نغمة<span>.</span></div>
-        <div style="cursor: pointer;" onclick="toggleMenu()">☰</div>
+        <div style="cursor: pointer; font-size: 20px;" onclick="toggleMenu()">☰</div>
     </div>
 
     <div class="filter-bar">
@@ -74,14 +80,14 @@
         <!-- المنتجات ستظهر هنا تلقائياً -->
     </div>
 
-    <!-- زر دخول الآدمن لإضافة المنتجات -->
-    <div class="admin-panel-trigger" onclick="openAdminLogin()">🔒 لوحة تحكم الآدمن (إضافة منتج وتعديل السعر)</div>
+    <!-- زر دخول الآدمن -->
+    <div class="admin-panel-trigger" onclick="openAdminLogin()">🔒 لوحة تحكم الآدمن (إضافة منتج وتعديل الأسعار)</div>
 
-    <!-- نافذة تسجيل الدخول وإضافة المنتجات -->
+    <!-- نافذة التحكم -->
     <div class="admin-modal" id="adminModal">
         <div class="admin-content" id="loginBox">
             <h3>تسجيل دخول الآدمن</h3>
-            <p style="font-size: 12px; color: #666; margin-bottom: 10px;">أدخل كلمة المرور (الباسورد الافتراضي: 07844606010)</p>
+            <p style="font-size: 12px; color: #666; margin-bottom: 10px;">أدخل كلمة المرور: `07844606010`</p>
             <input type="password" id="adminPassword" placeholder="كلمة المرور">
             <button onclick="checkAdmin()">دخول</button>
             <button onclick="closeAdminLogin()" style="background:#ccc; color:#333; margin-top:5px;">إلغاء</button>
@@ -90,10 +96,20 @@
         <div class="admin-content" id="dashboardBox" style="display:none;">
             <h3>إضافة منتج جديد</h3>
             <input type="text" id="pTitle" placeholder="اسم المنتج (مثال: قهوة كولومبية)">
-            <input type="text" id="pPrice" placeholder="السعر بالدينار (مثال: IQD 35,000)">
-            <input type="text" id="pImage" placeholder="رابط صورة المنتج (انسخ رابط الصورة)">
+            <input type="text" id="pPrice" placeholder="السعر (مثال: IQD 35,000)">
+            
+            <label class="file-upload-label" for="pImageFile">📁 اختر صورة من معرض الموبايل</label>
+            <input type="file" id="pImageFile" accept="image/*" style="display:none;" onchange="previewImage(event)">
+            <div id="imgNamePreview" style="font-size: 12px; color: #25d366; text-align: center; margin-bottom: 5px;"></div>
+
             <button onclick="addNewProduct()">حفظ ونشر المنتج</button>
-            <button onclick="closeAdminLogin()" style="background:#ff4757; margin-top:5px;">إغلاق لوحة التحكم</button>
+            
+            <hr style="margin: 20px 0; border:0; border-top:1px solid #ddd;">
+            
+            <h3>إدارة وحذف المنتجات الحالية</h3>
+            <div id="adminProductsList" style="margin-top: 10px;"></div>
+
+            <button onclick="closeAdminLogin()" style="background:#ff4757; margin-top:20px;">إغلاق لوحة التحكم</button>
         </div>
     </div>
 
@@ -104,30 +120,30 @@
             <strong>فئات</strong>
             <span style="cursor:pointer; font-size:18px;" onclick="toggleMenu()">✕</span>
         </div>
-        <div class="drawer-menu-item">القهوة المختصة <span>+</span></div>
-        <div class="drawer-menu-item">BRANDS <span>+</span></div>
-        <div class="drawer-menu-item">وصل حديثاً</div>
-        <div class="drawer-menu-item">ادوات تقطير <span>+</span></div>
-        <div class="drawer-menu-item">ادوات الاسبريسو <span>+</span></div>
-        <div class="drawer-menu-item">الماتشا وادواتها</div>
-        <div class="drawer-menu-item">الاكواب</div>
-        <div class="drawer-menu-item">المنظفات وادواتها</div>
+        <div class="drawer-menu-item" onclick="toggleMenu()">القهوة المختصة <span>+</span></div>
+        <div class="drawer-menu-item" onclick="toggleMenu()">BRANDS <span>+</span></div>
+        <div class="drawer-menu-item" onclick="toggleMenu()">وصل حديثاً</div>
+        <div class="drawer-menu-item" onclick="toggleMenu()">ادوات تقطير <span>+</span></div>
+        <div class="drawer-menu-item" onclick="toggleMenu()">ادوات الاسبريسو <span>+</span></div>
+        <div class="drawer-menu-item" onclick="toggleMenu()">الماتشا وادواتها</div>
+        <div class="drawer-menu-item" onclick="toggleMenu()">الاكواب</div>
+        <div class="drawer-menu-item" onclick="toggleMenu()">المنظفات وادواتها</div>
     </div>
 
     <!-- الشريط السفلي -->
     <div class="bottom-nav">
-        <a href="#" class="nav-item"><span>🔲</span><span>محل</span></a>
-        <a href="#" class="nav-item"><span>🤍</span><span>قائمة الرغ...</span></a>
-        <a href="#" class="nav-item"><span>🛒</span><span>عربة التس...</span></a>
-        <a href="#" class="nav-item"><span>👤</span><span>حساب</span></a>
-        <a href="#" class="nav-item"><span>🔍</span><span>يبحث</span></a>
+        <a class="nav-item" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><span>🔲</span><span>محل</span></a>
+        <a class="nav-item" onclick="alert('قائمة الرغبات فارغة')"><span>🤍</span><span>قائمة الرغ...</span></a>
+        <a class="nav-item" onclick="alert('عربة التسوق فارغة')"><span>🛒</span><span>عربة التس...</span></a>
+        <a class="nav-item" onclick="openAdminLogin()"><span>👤</span><span>حساب الآدمن</span></a>
+        <a class="nav-item" onclick="alert('استخدم زر البحث بالأعلى')"><span>🔍</span><span>يبحث</span></a>
     </div>
 
     <script>
         const whatsappNumber = "9647844606010";
-        const adminPass = "07844606010"; // كلمة السر الخاصة بك
+        const adminPass = "07844606010";
+        let tempBase64Image = "";
 
-        // المنتجات الأساسية الافتراضية
         let products = JSON.parse(localStorage.getItem('nagm_products')) || [
             {
                 title: "قهوة اسبريسو ماستر بليند مختصة",
@@ -166,6 +182,31 @@
             });
         }
 
+        function renderAdminList() {
+            const list = document.getElementById('adminProductsList');
+            list.innerHTML = "";
+            products.forEach((p, index) => {
+                list.innerHTML += `
+                    <div class="admin-product-row">
+                        <span>${p.title} (${p.price})</span>
+                        <button class="delete-btn" onclick="deleteProduct(${index})">حذف</button>
+                    </div>
+                `;
+            });
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempBase64Image = e.target.result;
+                    document.getElementById('imgNamePreview').innerText = "✅ تم اختيار الصورة بنجاح";
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
         function toggleMenu() {
             document.getElementById('drawer').classList.toggle('open');
             document.getElementById('overlay').classList.toggle('active');
@@ -187,6 +228,7 @@
                 document.getElementById('loginBox').style.display = 'none';
                 document.getElementById('dashboardBox').style.display = 'block';
                 document.getElementById('adminPassword').value = "";
+                renderAdminList();
             } else {
                 alert('كلمة المرور غير صحيحة!');
             }
@@ -195,22 +237,33 @@
         function addNewProduct() {
             let title = document.getElementById('pTitle').value;
             let price = document.getElementById('pPrice').value;
-            let image = document.getElementById('pImage').value;
 
-            if(!title || !price || !image) {
-                alert('يرجى ملء جميع الحقول!');
+            if(!title || !price || !tempBase64Image) {
+                alert('يرجى ملء اسم المنتج، السعر، واختيار صورة من المعرض!');
                 return;
             }
 
-            products.push({ title, price, image, brand: "نغمة فنجان" });
+            products.push({ title, price, image: tempBase64Image, brand: "نغمة فنجان" });
             localStorage.setItem('nagm_products', JSON.stringify(products));
             renderProducts();
-            closeAdminLogin();
-            alert('تم إضافة المنتج بنجاح!');
+            renderAdminList();
             
             document.getElementById('pTitle').value = "";
             document.getElementById('pPrice').value = "";
-            document.getElementById('pImage').value = "";
+            document.getElementById('imgNamePreview').innerText = "";
+            tempBase64Image = "";
+            document.getElementById('pImageFile').value = "";
+            
+            alert('تم إضافة ونشر المنتج بنجاح!');
+        }
+
+        function deleteProduct(index) {
+            if(confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
+                products.splice(index, 1);
+                localStorage.setItem('nagm_products', JSON.stringify(products));
+                renderProducts();
+                renderAdminList();
+            }
         }
 
         renderProducts();
