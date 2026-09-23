@@ -1,1 +1,764 @@
 
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نغمة فنجان | متجر القهوة</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Arial,Tahoma,sans-serif;
+background:#f6f1eb;
+color:#2b1a12
+}
+header{
+background:#24150f;
+color:white;
+padding:15px;
+position:sticky;
+top:0;
+z-index:10
+}
+.header{
+max-width:1100px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:space-between
+}
+.logo{
+font-size:23px;
+font-weight:bold
+}
+.logo span{color:#d9a45d}
+
+.cart{
+background:#6b4328;
+border:0;
+color:white;
+padding:10px 15px;
+border-radius:12px;
+font-size:16px
+}
+
+.hero{
+max-width:1100px;
+margin:20px auto;
+padding:0 15px
+}
+.heroBox{
+background:linear-gradient(135deg,#392117,#75492d);
+color:white;
+border-radius:25px;
+padding:35px 25px;
+text-align:center
+}
+.hero h1{
+font-size:32px;
+margin:5px 0 12px
+}
+.hero p{
+color:#eaded5
+}
+
+.search{
+width:100%;
+max-width:700px;
+padding:15px;
+border:0;
+border-radius:14px;
+font-size:16px;
+outline:none
+}
+
+.categories{
+max-width:1100px;
+margin:auto;
+padding:5px 15px 15px;
+display:flex;
+gap:8px;
+overflow:auto
+}
+.category{
+white-space:nowrap;
+padding:10px 16px;
+border:0;
+border-radius:20px;
+background:white;
+color:#573522
+}
+.category.active{
+background:#6b4328;
+color:white
+}
+
+main{
+max-width:1100px;
+margin:auto;
+padding:0 15px 60px
+}
+
+.title{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin:15px 0
+}
+
+.products{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px
+}
+
+.product{
+background:white;
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 4px 15px #00000010
+}
+
+.productImage{
+height:190px;
+background:#e9ddd2;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:60px
+}
+
+.productImage img{
+width:100%;
+height:100%;
+object-fit:cover
+}
+
+.productInfo{
+padding:14px
+}
+
+.productName{
+font-weight:bold;
+font-size:17px;
+min-height:42px
+}
+
+.description{
+color:#87766c;
+font-size:13px;
+margin:6px 0;
+min-height:35px
+}
+
+.price{
+font-size:19px;
+font-weight:bold;
+color:#75492d;
+margin:10px 0
+}
+
+.add{
+width:100%;
+background:#24150f;
+color:white;
+border:0;
+padding:12px;
+border-radius:10px;
+font-weight:bold
+}
+
+.add:active{
+transform:scale(.98)
+}
+
+footer{
+background:#24150f;
+color:white;
+text-align:center;
+padding:30px 15px
+}
+
+footer span{color:#d9a45d}
+
+.modal{
+display:none;
+position:fixed;
+inset:0;
+background:#0009;
+z-index:100;
+padding:15px;
+overflow:auto
+}
+
+.modal.show{
+display:block
+}
+
+.modalBox{
+background:white;
+max-width:600px;
+margin:30px auto;
+padding:20px;
+border-radius:20px
+}
+
+.close{
+float:left;
+border:0;
+background:#eee;
+padding:8px 12px;
+border-radius:8px
+}
+
+.cartItem{
+display:flex;
+align-items:center;
+gap:10px;
+padding:12px 0;
+border-bottom:1px solid #eee
+}
+
+.cartItemName{
+flex:1;
+font-weight:bold
+}
+
+.qty button{
+border:0;
+background:#eee;
+padding:7px 11px;
+border-radius:7px
+}
+
+.whatsapp{
+width:100%;
+background:#159447;
+color:white;
+border:0;
+padding:15px;
+border-radius:12px;
+font-size:17px;
+font-weight:bold;
+margin-top:15px
+}
+
+.empty{
+text-align:center;
+padding:35px;
+color:#88776d
+}
+
+@media(max-width:800px){
+.products{
+grid-template-columns:repeat(3,1fr)
+}
+}
+
+@media(max-width:600px){
+.hero h1{
+font-size:27px
+}
+.products{
+grid-template-columns:repeat(2,1fr);
+gap:10px
+}
+.productImage{
+height:150px
+}
+.productName{
+font-size:14px
+}
+.productInfo{
+padding:10px
+}
+.price{
+font-size:16px
+}
+}
+
+@media(max-width:380px){
+.products{
+grid-template-columns:1fr
+}
+.productImage{
+height:210px
+}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="header">
+<div class="logo">
+نغمة <span>فنجان</span> ☕
+</div>
+
+<button class="cart" onclick="openCart()">
+🛒 السلة (<span id="cartCount">0</span>)
+</button>
+</div>
+</header>
+
+<section class="hero">
+
+<div class="heroBox">
+
+<h1>كل عالم القهوة بمكان واحد ☕</h1>
+
+<p>
+قهوة، مطاحن، مكائن وأدوات لجميع عشاق القهوة في العراق
+</p>
+
+<input
+class="search"
+id="search"
+placeholder="🔎 ابحث عن منتج..."
+oninput="showProducts()"
+>
+
+</div>
+
+</section>
+
+<div class="categories">
+
+<button class="category active" onclick="filterCategory('all',this)">
+الكل
+</button>
+
+<button class="category" onclick="filterCategory('coffee',this)">
+☕ القهوة
+</button>
+
+<button class="category" onclick="filterCategory('grinders',this)">
+⚙️ المطاحن
+</button>
+
+<button class="category" onclick="filterCategory('machines',this)">
+🔥 المكائن
+</button>
+
+<button class="category" onclick="filterCategory('tools',this)">
+🧰 الأدوات
+</button>
+
+<button class="category" onclick="filterCategory('espresso',this)">
+☕ إسبريسو
+</button>
+
+</div>
+
+<main>
+
+<div class="title">
+<h2 id="sectionTitle">كل المنتجات</h2>
+</div>
+
+<div class="products" id="products"></div>
+
+</main>
+
+<footer>
+
+<strong>نغمة <span>فنجان</span> ☕</strong>
+
+<br><br>
+
+متجر القهوة العراقي
+
+<br><br>
+
+للطلب والاستفسار عبر واتساب
+
+<br>
+
+07844606010
+
+</footer>
+
+
+<!-- CART -->
+
+<div class="modal" id="cartModal">
+
+<div class="modalBox">
+
+<button class="close" onclick="closeCart()">✕</button>
+
+<h2>🛒 سلة المشتريات</h2>
+
+<div id="cartItems"></div>
+
+<h3 id="total"></h3>
+
+<button class="whatsapp" onclick="sendWhatsApp()">
+📱 إرسال الطلب عبر واتساب
+</button>
+
+</div>
+
+</div>
+
+
+<script>
+
+const whatsapp="9647844606010";
+
+const products=[
+
+{
+id:1,
+name:"MHW-3BOMBER G3",
+description:"مطحنة قهوة دقيقة ومناسبة للإسبريسو",
+price:125000,
+category:"grinders",
+emoji:"⚙️"
+},
+
+{
+id:2,
+name:"Timemore C3 ESP",
+description:"مطحنة يدوية مناسبة للإسبريسو",
+price:95000,
+category:"grinders",
+emoji:"⚙️"
+},
+
+{
+id:3,
+name:"KINGrinder K2",
+description:"مطحنة يدوية قوية للقهوة والإسبريسو",
+price:125000,
+category:"grinders",
+emoji:"⚙️"
+},
+
+{
+id:4,
+name:"بن إثيوبي 250g",
+description:"قهوة مختصة محمصة حديثاً",
+price:22000,
+category:"coffee",
+emoji:"☕"
+},
+
+{
+id:5,
+name:"بن كولومبي 250g",
+description:"نكهة متوازنة ومناسبة للإسبريسو",
+price:20000,
+category:"coffee",
+emoji:"☕"
+},
+
+{
+id:6,
+name:"WDT Tool",
+description:"أداة توزيع القهوة قبل الاستخلاص",
+price:18000,
+category:"tools",
+emoji:"🧰"
+},
+
+{
+id:7,
+name:"Portafilter 51mm",
+description:"بورتافلتر بدون قاع لماكينات 51mm",
+price:35000,
+category:"espresso",
+emoji:"☕"
+},
+
+{
+id:8,
+name:"ماكينة إسبريسو منزلية",
+description:"ماكينة لتحضير الإسبريسو في البيت",
+price:0,
+category:"machines",
+emoji:"🔥"
+}
+
+];
+
+let currentCategory="all";
+
+let cart=[];
+
+
+function money(number){
+
+if(number===0)
+return "السعر عند الطلب";
+
+return Number(number).toLocaleString("en-US")+" د.ع";
+
+}
+
+
+function filterCategory(category,button){
+
+currentCategory=category;
+
+document.querySelectorAll(".category")
+.forEach(x=>x.classList.remove("active"));
+
+button.classList.add("active");
+
+showProducts();
+
+}
+
+
+function showProducts(){
+
+const search=
+document.getElementById("search")
+.value
+.toLowerCase();
+
+let list=products.filter(product=>{
+
+let categoryOK=
+currentCategory==="all" ||
+product.category===currentCategory;
+
+let searchOK=
+product.name.toLowerCase().includes(search) ||
+product.description.toLowerCase().includes(search);
+
+return categoryOK && searchOK;
+
+});
+
+
+let html="";
+
+
+if(list.length===0){
+
+html='<div class="empty">ماكو منتجات مطابقة للبحث.</div>';
+
+}else{
+
+list.forEach(product=>{
+
+html+=`
+
+<div class="product">
+
+<div class="productImage">
+${product.emoji}
+</div>
+
+<div class="productInfo">
+
+<div class="productName">
+${product.name}
+</div>
+
+<div class="description">
+${product.description}
+</div>
+
+<div class="price">
+${money(product.price)}
+</div>
+
+<button class="add"
+onclick="addToCart(${product.id})">
+
+أضف للسلة 🛒
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+}
+
+
+document.getElementById("products").innerHTML=html;
+
+}
+
+
+function addToCart(id){
+
+cart.push(id);
+
+updateCartCount();
+
+alert("تمت إضافة المنتج للسلة ☕");
+
+}
+
+
+function updateCartCount(){
+
+document.getElementById("cartCount")
+.innerText=cart.length;
+
+}
+
+
+function openCart(){
+
+const box=document.getElementById("cartItems");
+
+if(cart.length===0){
+
+box.innerHTML=
+'<div class="empty">السلة فارغة 🛒</div>';
+
+document.getElementById("total").innerText="";
+
+}else{
+
+let grouped={};
+
+cart.forEach(id=>{
+grouped[id]=(grouped[id]||0)+1;
+});
+
+let total=0;
+
+let html="";
+
+Object.keys(grouped).forEach(id=>{
+
+let product=
+products.find(x=>x.id==id);
+
+let quantity=grouped[id];
+
+total+=product.price*quantity;
+
+html+=`
+
+<div class="cartItem">
+
+<div class="cartItemName">
+
+${product.name}
+
+<br>
+
+<small>${money(product.price)}</small>
+
+</div>
+
+<div class="qty">
+
+<button onclick="removeFromCart(${id})">−</button>
+
+${quantity}
+
+<button onclick="addToCart(${id});openCart()">+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+box.innerHTML=html;
+
+document.getElementById("total").innerText=
+"المجموع: "+money(total);
+
+}
+
+document
+.getElementById("cartModal")
+.classList.add("show");
+
+}
+
+
+function removeFromCart(id){
+
+let index=cart.indexOf(Number(id));
+
+if(index!==-1){
+
+cart.splice(index,1);
+
+}
+
+updateCartCount();
+
+openCart();
+
+}
+
+
+function closeCart(){
+
+document
+.getElementById("cartModal")
+.classList.remove("show");
+
+}
+
+
+function sendWhatsApp(){
+
+if(cart.length===0){
+
+alert("السلة فارغة");
+
+return;
+
+}
+
+let grouped={};
+
+cart.forEach(id=>{
+grouped[id]=(grouped[id]||0)+1;
+});
+
+let message=
+"السلام عليكم، أريد الطلب من متجر نغمة فنجان ☕%0A%0A";
+
+Object.keys(grouped).forEach(id=>{
+
+let product=
+products.find(x=>x.id==id);
+
+message+=
+"• "+
+product.name+
+" × "+
+grouped[id]+
+"%0A";
+
+});
+
+message+="%0Aشكراً لكم 🌹";
+
+window.open(
+"https://wa.me/"+whatsapp+"?text="+message,
+"_blank"
+);
+
+}
+
+
+showProducts();
+
+</script>
+
+</body>
+</html>
