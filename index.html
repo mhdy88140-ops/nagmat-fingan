@@ -1,395 +1,60 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر نيران قهوة للقهوة المختصة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', Tahoma, sans-serif; }
-        body { background-color: #1a120b; color: #f5ebe0; padding-bottom: 70px; }
-        
-        .top-bar { background: linear-gradient(135deg, #2c160b, #4e2711); border-bottom: 1px solid #bc6c25; padding: 10px 15px; font-size: 12px; text-align: center; color: #dda15e; }
-        .top-bar div { margin-bottom: 3px; }
-        
-        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #3c2a21; background: #241711; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
-        .header-icons { display: flex; gap: 15px; align-items: center; font-size: 18px; cursor: pointer; color: #dda15e; }
-        
-        .logo { font-size: 22px; font-weight: 700; color: #f5ebe0; letter-spacing: -0.5px; display: flex; align-items: center; gap: 4px; }
-        .logo span { color: #e76f51; font-size: 26px; line-height: 0; text-shadow: 0 0 10px rgba(231, 111, 81, 0.6); }
-        
-        .search-box-container { padding: 10px 15px; background: #2c160b; display: none; border-bottom: 1px solid #3c2a21; }
-        .search-box-container input { width: 100%; padding: 8px 12px; border: 1px solid #bc6c25; border-radius: 4px; font-size: 14px; background: #1a120b; color: #fff; outline: none; }
+// نموذج لبيانات المنتجات في متجرك (يمكنك تعديلها وإضافة منتجاتك)
+const products = [
+    { id: 1, name: "مطحنة يوية 1", category: "المطاحن اليدوية", price: "25,000 د.ع", image: "img1.jpg" },
+    { id: 2, name: "قمع تقطير V60 زجاجي", category: "ادوات تقطير", price: "18,000 د.ع", image: "img2.jpg" },
+    { id: 3, name: "فلتر V60 ورقي", category: "ادوات تقطير", price: "5,000 د.ع", image: "img3.jpg" },
+    { id: 4, name: "تامبر قهوة اسبريسو", category: "التامبر والادوات", price: "15,000 د.ع", image: "img4.jpg" }
+];
 
-        .filter-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; font-size: 14px; color: #dda15e; border-bottom: 1px solid #3c2a21; background: #20140e; }
-        
-        .products-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
-        .product-card { background: #241711; border: 1px solid #3c2a21; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; position: relative; cursor: pointer; box-shadow: 0 3px 8px rgba(0,0,0,0.3); transition: 0.2s; }
-        .product-card:hover { transform: translateY(-2px); border-color: #bc6c25; box-shadow: 0 5px 15px rgba(188, 108, 37, 0.2); }
-        .product-img-box { position: relative; width: 100%; height: 160px; background: #1a120b; display: flex; align-items: center; justify-content: center; border-radius: 6px; }
-        .product-img-box img { max-height: 100%; max-width: 100%; object-fit: contain; }
-        
-        .whatsapp-btn { background: #25d366; color: white; border: none; padding: 9px; border-radius: 4px; width: 100%; font-size: 13px; font-weight: bold; cursor: pointer; margin-top: 10px; text-align: center; text-decoration: none; display: block; }
-        .whatsapp-btn:hover { background: #1ebe57; }
-        
-        .product-brand { font-size: 11px; color: #dda15e; margin-top: 8px; text-align: right; font-weight: 600; }
-        .product-title { font-size: 13px; color: #f5ebe0; margin: 4px 0; text-align: right; line-height: 1.3; height: 34px; overflow: hidden; font-weight: 600; }
-        .product-price { font-size: 14px; font-weight: bold; color: #e76f51; text-align: right; margin-top: 5px; }
+// دالة تصفية المنتجات عند الضغط على القسم (مثل المطاحن أو V60)
+function filterByCategory(categoryName) {
+    const filtered = products.filter(p => p.category.includes(categoryName) || p.name.includes(categoryName));
+    displayProducts(filtered);
+}
 
-        /* نافذة تفاصيل المنتج للزبون */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 10, 7, 0.8); z-index: 2500; justify-content: center; align-items: flex-end; backdrop-filter: blur(3px); }
-        .modal-content { background: #241711; color: #f5ebe0; width: 100%; max-height: 85vh; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; overflow-y: auto; border-top: 2px solid #bc6c25; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-img { width: 100%; height: 250px; object-fit: contain; background: #1a120b; border-radius: 8px; margin-bottom: 15px; }
-        .close-modal { float: left; font-size: 22px; cursor: pointer; color: #dda15e; }
-        .product-desc { font-size: 13px; color: #d3c5b4; margin: 10px 0 20px 0; line-height: 1.5; }
-        
-        /* لوحة التحكم والآدمن */
-        .admin-panel-trigger { text-align: center; padding: 15px; background: linear-gradient(135deg, #bc6c25, #9b581c); color: #fff; margin: 20px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(188, 108, 37, 0.3); }
-        .admin-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
-        .admin-content { background: #241711; color: #f5ebe0; padding: 20px; width: 90%; max-width: 400px; border-radius: 8px; max-height: 90vh; overflow-y: auto; border: 1px solid #bc6c25; }
-        .admin-content input, .admin-content textarea { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #bc6c25; border-radius: 4px; font-family: 'Cairo', sans-serif; background: #1a120b; color: #fff; outline: none; }
-        .admin-content button { background: #bc6c25; color: #fff; border: none; padding: 10px; width: 100%; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        
-        .file-upload-label { display: block; background: #1a120b; border: 1px dashed #bc6c25; padding: 10px; text-align: center; border-radius: 4px; margin: 8px 0; cursor: pointer; font-size: 13px; color: #dda15e; }
-        .admin-product-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #3c2a21; font-size: 13px; }
-        .delete-btn { background: #e76f51; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+// دالة البحث
+function searchProducts(query) {
+    const searchTerm = query.toLowerCase();
+    const results = products.filter(p => p.name.toLowerCase().includes(searchTerm) || p.category.toLowerCase().includes(searchTerm));
+    displayProducts(results);
+}
 
-        /* الشريط السفلي والقائمة */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #20140e; border-top: 1px solid #3c2a21; display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; box-shadow: 0 -2px 8px rgba(0,0,0,0.4); }
-        .nav-item { text-align: center; text-decoration: none; color: #dda15e; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-        .nav-item:hover { color: #e76f51; }
-        
-        .drawer { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: #241711; color: #f5ebe0; box-shadow: -2px 0 10px rgba(0,0,0,0.5); transition: 0.3s; z-index: 1100; padding: 20px; overflow-y: auto; border-left: 1px solid #3c2a21; }
-        .drawer.open { right: 0; }
-        .drawer-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3c2a21; padding-bottom: 10px; margin-bottom: 15px; }
-        
-        /* تصميم القوائم المنسدلة التفاعلية */
-        .menu-category { border-bottom: 1px solid #3c2a21; }
-        .drawer-menu-item { padding: 12px 0; font-size: 14px; color: #f5ebe0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
-        .drawer-menu-item:hover { color: #dda15e; }
-        .submenu { display: none; padding-right: 15px; background-color: #1a120b; border-radius: 4px; margin-bottom: 5px; }
-        .submenu-item { padding: 8px 0; font-size: 13px; color: #d3c5b4; cursor: pointer; border-bottom: 1px dashed #3c2a21; }
-        .submenu-item:last-child { border-bottom: none; }
-        .submenu-item:hover { color: #dda15e; }
-
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; z-index: 1050; }
-        .overlay.active { display: block; }
-    </style>
-</head>
-<body>
-
-    <div class="top-bar">
-        <div>موقعنا على الخريطة 📍</div>
-        <div>توصيل مجاني للطلبات فوق الـ 100,000 دينار عراقي ! تسوق الان</div>
-    </div>
-
-    <div class="main-header">
-        <div class="header-icons">
-            <span onclick="toggleSearch()" title="بحث">🔍</span>
-            <span onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="السلة">🛒</span>
-        </div>
-        <div class="logo">نيران قهوة<span>🔥</span></div>
-        <div style="cursor: pointer; font-size: 20px; color: #dda15e;" onclick="toggleMenu()">☰</div>
-    </div>
-
-    <div class="search-box-container" id="searchContainer">
-        <input type="text" id="searchInput" placeholder="ابحث عن منتج..." onkeyup="filterProducts()">
-    </div>
-
-    <div class="filter-bar">
-        <span>أجود محامص وقهوة نيران 🔥</span>
-    </div>
-
-    <!-- شبكة المنتجات -->
-    <div class="products-container" id="products-grid"></div>
-
-    <!-- نافذة تفاصيل المنتج للزبون -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeProductModal()">✕</span>
-            <img id="modalImg" class="modal-img" src="" alt="صورة المنتج">
-            <div id="modalBrand" style="font-size: 12px; color: #dda15e; margin-bottom: 5px;"></div>
-            <h2 id="modalTitle" style="font-size: 16px; color: #f5ebe0; margin-bottom: 10px;"></h2>
-            <div id="modalPrice" style="font-size: 18px; font-weight: bold; color: #e76f51; margin-bottom: 15px;"></div>
-            <div id="modalDesc" class="product-desc"></div>
-            <a id="modalWhatsappBtn" href="#" target="_blank" class="whatsapp-btn" style="padding: 12px; font-size: 14px;">اطلب الآن عبر واتساب 💬</a>
-        </div>
-    </div>
-
-    <!-- زر دخول الآدمن -->
-    <div class="admin-panel-trigger" onclick="openAdminLogin()">🔒 لوحة تحكم الآدمن (إضافة منتج وتعديل الأسعار)</div>
-
-    <!-- نافذة التحكم للآدمن -->
-    <div class="admin-modal" id="adminModal">
-        <div class="admin-content" id="loginBox">
-            <h3>تسجيل دخول الآدمن</h3>
-            <p style="font-size: 12px; color: #d3c5b4; margin-bottom: 10px;">أدخل كلمة المرور الخاصة بك</p>
-            <input type="password" id="adminPassword" placeholder="كلمة المرور">
-            <button onclick="checkAdmin()">دخول</button>
-            <button onclick="closeAdminLogin()" style="background:#444; color:#fff; margin-top:5px;">إلغاء</button>
-        </div>
-
-        <div class="admin-content" id="dashboardBox" style="display:none;">
-            <h3>إضافة منتج جديد</h3>
-            <input type="text" id="pTitle" placeholder="اسم المنتج (مثال: قهوة كولومبية)">
-            <input type="text" id="pPrice" placeholder="السعر (مثال: IQD 35,000)">
-            <textarea id="pDesc" placeholder="تفاصيل ووصف المنتج..." rows="3"></textarea>
-            
-            <label class="file-upload-label" for="pImageFile">📁 اختر صورة من معرض الموبايل</label>
-            <input type="file" id="pImageFile" accept="image/*" style="display:none;" onchange="previewImage(event)">
-            <div id="imgNamePreview" style="font-size: 12px; color: #25d366; text-align: center; margin-bottom: 5px;"></div>
-
-            <button onclick="addNewProduct()">حفظ ونشر المنتج</button>
-            
-            <hr style="margin: 20px 0; border:0; border-top:1px solid #3c2a21;">
-            
-            <h3>إدارة وحذف المنتجات الحالية</h3>
-            <div id="adminProductsList" style="margin-top: 10px;"></div>
-
-            <button onclick="closeAdminLogin()" style="background:#e76f51; margin-top:20px;">إغلاق لوحة التحكم</button>
-        </div>
-    </div>
-
-    <!-- القائمة الجانبية مع التفعيل التفاعلي للخيارات -->
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-    <div class="drawer" id="drawer">
-        <div class="drawer-header">
-            <strong>الفئات والأقسام</strong>
-            <span style="cursor:pointer; font-size:18px; color:#dda15e;" onclick="toggleMenu()">✕</span>
-        </div>
-        
-        <div class="menu-category">
-            <div class="drawer-menu-item" onclick="toggleSubmenu('sub-coffee')">القهوة المختصة <span>+</span></div>
-            <div class="submenu" id="sub-coffee">
-                <div class="submenu-item" onclick="filterByCategory('حبوب اسبريسو'); toggleMenu();">حبوب إسبريسو</div>
-                <div class="submenu-item" onclick="filterByCategory('قهوة فلتر'); toggleMenu();">قهوة فلتر وتقطير</div>
+// دالة لعرض النتائج في واجهة المتجر (تأكد من مطابقة اسم الـ ID لعنصر العرض لديك)
+function displayProducts(items) {
+    const container = document.getElementById('products-container'); // ضع هنا الـ ID الخاص بحاوية المنتجات في موقعك
+    if (!container) return;
+    
+    container.innerHTML = '';
+    if (items.length === 0) {
+        container.innerHTML = '<p>لا توجد نتائج مطابقة لبحثك.</p>';
+        return;
+    }
+    
+    items.forEach(product => {
+        container.innerHTML += `
+            <div class="product-card">
+                <h3>${product.name}</h3>
+                <p>السعر: ${product.price}</p>
             </div>
-        </div>
+        `;
+    });
+}
 
-        <div class="menu-category">
-            <div class="drawer-menu-item" onclick="toggleSubmenu('sub-brands')">BRANDS <span>+</span></div>
-            <div class="submenu" id="sub-brands">
-                <div class="submenu-item" onclick="toggleMenu()">نيران قهوة</div>
-                <div class="submenu-item" onclick="toggleMenu()">محامص عالمية</div>
-            </div>
-        </div>
+// ربط الأحداث بأزرار القائمة وشريط البحث
+document.addEventListener('DOMContentLoaded', () => {
+    // ربط روابط الأقسام في القائمة الجانبية
+    document.querySelectorAll('.menu-category-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            const category = e.target.getAttribute('data-category');
+            filterByCategory(category);
+        });
+    });
 
-        <div class="drawer-menu-item" onclick="filterProductsReset(); toggleMenu();">وصل حديثاً</div>
-
-        <div class="menu-category">
-            <div class="drawer-menu-item" onclick="toggleSubmenu('sub-drip')">ادوات تقطير <span>+</span></div>
-            <div class="submenu" id="sub-drip">
-                <div class="submenu-item" onclick="toggleMenu()">قمع V60</div>
-                <div class="submenu-item" onclick="toggleMenu()">سيرفرات التقطير</div>
-                <div class="submenu-item" onclick="toggleMenu()">مرشحات ورقية</div>
-            </div>
-        </div>
-
-        <div class="menu-category">
-            <div class="drawer-menu-item" onclick="toggleSubmenu('sub-espresso')">ادوات الاسبريسو <span>+</span></div>
-            <div class="submenu" id="sub-espresso">
-                <div class="submenu-item" onclick="toggleMenu()">المطاحن اليدوية</div>
-                <div class="submenu-item" onclick="toggleMenu()">التامبر والادوات</div>
-                <div class="submenu-item" onclick="toggleMenu()">البورتافيلتر</div>
-            </div>
-        </div>
-
-        <div class="drawer-menu-item" onclick="toggleMenu()">الماتشا وادواتها</div>
-        <div class="drawer-menu-item" onclick="toggleMenu()">الاكواب</div>
-        <div class="drawer-menu-item" onclick="toggleMenu()">المنظفات وادواتها</div>
-    </div>
-
-    <!-- الشريط السفلي -->
-    <div class="bottom-nav">
-        <a class="nav-item" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><span>🏠</span><span>محل</span></a>
-        <a class="nav-item" onclick="window.scrollTo({top: 200, behavior: 'smooth'})"><span>🤍</span><span>المفضلة</span></a>
-        <a class="nav-item" onclick="window.scrollTo({top: 200, behavior: 'smooth'})"><span>🛒</span><span>السلة</span></a>
-        <a class="nav-item" onclick="openAdminLogin()"><span>👤</span><span>الآدمن</span></a>
-        <a class="nav-item" onclick="toggleSearch()"><span>🔍</span><span>بحث</span></a>
-    </div>
-
-    <script>
-        const whatsappNumber = "9647872997479";
-        const adminPass = "07844606010";
-        let tempBase64Image = "";
-
-        let products = JSON.parse(localStorage.getItem('niran_coffee_products')) || [
-            {
-                title: "قهوة اسبريسو نيران الخاصة",
-                price: "IQD 45,000",
-                desc: "حبوب قهوة مختصة محمصة بعناية على جمر النيران لتمنحك قواماً غنياً ومذاقاً فريداً يجمع بين الشوكولاتة الداكنة والمكسرات المحمصة.",
-                image: "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=400&q=80",
-                brand: "نيران قهوة"
-            },
-            {
-                title: "قهوة اسبريسو هافانا الفاخرة",
-                price: "IQD 25,000",
-                desc: "خليط متوازن بعناية من أجود حبوب البن المحمصة، تتميز برائحة عطرية قوية وطعم سلس يدوم طويلاً.",
-                image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80",
-                brand: "نيران قهوة"
-            }
-        ];
-
-        function renderProducts(itemsToRender = products) {
-            const grid = document.getElementById('products-grid');
-            grid.innerHTML = "";
-            if(itemsToRender.length === 0) {
-                grid.innerHTML = "<p style='grid-column: span 2; text-align: center; color: #888; padding: 20px;'>لا توجد منتجات مطابقة</p>";
-                return;
-            }
-            itemsToRender.forEach((p, index) => {
-                let msg = encodeURIComponent(`مرحباً، أرغب في طلب المنتج: ${p.title} بسعر ${p.price}`);
-                let realIndex = products.indexOf(p);
-                grid.innerHTML += `
-                    <div class="product-card">
-                        <div onclick="openProductModal(${realIndex})">
-                            <div class="product-img-box">
-                                <img src="${p.image}" alt="منتج">
-                            </div>
-                            <div class="product-brand">${p.brand}</div>
-                            <div class="product-title">${p.title}</div>
-                        </div>
-                        <div>
-                            <div class="product-price" onclick="openProductModal(${realIndex})">${p.price}</div>
-                            <a href="https://wa.me/${whatsappNumber}?text=${msg}" target="_blank" class="whatsapp-btn">اطلب عبر واتساب 💬</a>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function openProductModal(index) {
-            let p = products[index];
-            document.getElementById('modalImg').src = p.image;
-            document.getElementById('modalBrand').innerText = p.brand;
-            document.getElementById('modalTitle').innerText = p.title;
-            document.getElementById('modalPrice').innerText = p.price;
-            document.getElementById('modalDesc').innerText = p.desc || "لا يوجد وصف إضافي لهذا المنتج حالياً.";
-            
-            let msg = encodeURIComponent(`مرحباً، أرغب في طلب المنتج: ${p.title} بسعر ${p.price}`);
-            document.getElementById('modalWhatsappBtn').href = `https://wa.me/${whatsappNumber}?text=${msg}`;
-            
-            document.getElementById('productModal').style.display = 'flex';
-        }
-
-        function closeProductModal() {
-            document.getElementById('productModal').style.display = 'none';
-        }
-
-        function filterProducts() {
-            let query = document.getElementById('searchInput').value.toLowerCase();
-            let filtered = products.filter(p => p.title.toLowerCase().includes(query));
-            renderProducts(filtered);
-        }
-
-        function filterProductsReset() {
-            renderProducts(products);
-        }
-
-        function filterByCategory(catName) {
-            let filtered = products.filter(p => p.title.toLowerCase().includes(catName.toLowerCase()) || (p.desc && p.desc.toLowerCase().includes(catName.toLowerCase())));
-            renderProducts(filtered.length > 0 ? filtered : products);
-        }
-
-        function toggleSearch() {
-            let searchBox = document.getElementById('searchContainer');
-            searchBox.style.display = searchBox.style.display === 'block' ? 'none' : 'block';
-            if(searchBox.style.display === 'block') document.getElementById('searchInput').focus();
-        }
-
-        function toggleSubmenu(id) {
-            let sub = document.getElementById(id);
-            sub.style.display = sub.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function renderAdminList() {
-            const list = document.getElementById('adminProductsList');
-            list.innerHTML = "";
-            products.forEach((p, index) => {
-                list.innerHTML += `
-                    <div class="admin-product-row">
-                        <span>${p.title} (${p.price})</span>
-                        <button class="delete-btn" onclick="deleteProduct(${index})">حذف</button>
-                    </div>
-                `;
-            });
-        }
-
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    tempBase64Image = e.target.result;
-                    document.getElementById('imgNamePreview').innerText = "✅ تم اختيار الصورة بنجاح";
-                }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function toggleMenu() {
-            document.getElementById('drawer').classList.toggle('open');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        function openAdminLogin() {
-            document.getElementById('adminModal').style.display = 'flex';
-            document.getElementById('loginBox').style.display = 'block';
-            document.getElementById('dashboardBox').style.display = 'none';
-        }
-
-        function closeAdminLogin() {
-            document.getElementById('adminModal').style.display = 'none';
-        }
-
-        function checkAdmin() {
-            let inputPass = document.getElementById('adminPassword').value;
-            if(inputPass === adminPass) {
-                document.getElementById('loginBox').style.display = 'none';
-                document.getElementById('dashboardBox').style.display = 'block';
-                document.getElementById('adminPassword').value = "";
-                renderAdminList();
-            } else {
-                alert('كلمة المرور غير صحيحة!');
-            }
-        }
-
-        function addNewProduct() {
-            let title = document.getElementById('pTitle').value;
-            let price = document.getElementById('pPrice').value;
-            let desc = document.getElementById('pDesc').value;
-
-            if(!title || !price || !tempBase64Image) {
-                alert('يرجى ملء اسم المنتج، السعر، واختيار صورة من المعرض!');
-                return;
-            }
-
-            products.push({ title, price, desc: desc || "منتج عالي الجودة من متجر نيران قهوة.", image: tempBase64Image, brand: "نيران قهوة" });
-            localStorage.setItem('niran_coffee_products', JSON.stringify(products));
-            renderProducts();
-            renderAdminList();
-            
-            document.getElementById('pTitle').value = "";
-            document.getElementById('pPrice').value = "";
-            document.getElementById('pDesc').value = "";
-            document.getElementById('imgNamePreview').innerText = "";
-            tempBase64Image = "";
-            document.getElementById('pImageFile').value = "";
-            
-            alert('تم إضافة ونشر المنتج بنجاح!');
-        }
-
-        function deleteProduct(index) {
-            if(confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-                products.splice(index, 1);
-                localStorage.setItem('niran_coffee_products', JSON.stringify(products));
-                renderProducts();
-                renderAdminList();
-            }
-        }
-
-        renderProducts();
-    </script>
-</body>
-</html>
+    // ربط شريط البحث
+    const searchInput = document.getElementById('search-input'); // ضع الـ ID الخاص بحقل البحث لديك
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            searchProducts(e.target.value);
+        });
+    }
+});
