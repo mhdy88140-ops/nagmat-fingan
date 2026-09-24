@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر نيران قهوة</title>
+    <title>متجر نغمة فنجان</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', Tahoma, sans-serif; }
@@ -83,7 +83,7 @@
             <span onclick="toggleSearch()" title="بحث">🔍</span>
             <span onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="السلة">🛒</span>
         </div>
-        <div class="logo" onclick="resetFilter()">نيران قهوة<span>•</span></div>
+        <div class="logo" onclick="resetFilter()">نغمة فنجان<span>•</span></div>
         <div style="cursor: pointer; font-size: 20px; color: #f5e6d3;" onclick="toggleMenu()">☰</div>
     </div>
 
@@ -177,18 +177,18 @@
     </div>
 
     <script>
-        const whatsappNumber = "9647872997479";
-        const adminPass = "07872997479";
+        const whatsappNumber = "9647844606010";
+        const adminPass = "07844606010";
         let tempBase64Image = "";
 
-        let products = JSON.parse(localStorage.getItem('niran_products')) || [
+        let products = JSON.parse(localStorage.getItem('nagmat_fingan_products')) || [
             {
                 title: "مطحنة قهوة يدوية احترافية V60",
                 category: "المطاحن اليدوية",
                 price: "IQD 35,000",
                 desc: "مطحنة يدوية دقيقة مصممة خصيصاً لطحن حبوب القهوة بدرجات متناسقة لجميع أدوات التقطير و V60.",
                 image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80",
-                brand: "نيران قهوة"
+                brand: "نغمة فنجان"
             },
             {
                 title: "إبريق تقطير V60 مع قمع زجاجي",
@@ -196,7 +196,7 @@
                 price: "IQD 45,000",
                 desc: "مجموعة تقطير متكاملة لتحضير القهوة المختصة بأفضل معايير الاستخلاص.",
                 image: "https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=400&q=80",
-                brand: "نيران قهوة"
+                brand: "نغمة فنجان"
             },
             {
                 title: "قهوة اسبريسو ماستر بليند مختصة",
@@ -204,7 +204,7 @@
                 price: "IQD 25,000",
                 desc: "حبوب قهوة مختصة محمصة بعناية لتمنحك قواماً غنياً ومذاقاً فريـداً.",
                 image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80",
-                brand: "نيران قهوة"
+                brand: "نغمة فنجان"
             }
         ];
 
@@ -226,7 +226,7 @@
                             <div class="product-img-box">
                                 <img src="${p.image}" alt="منتج">
                             </div>
-                            <div class="product-brand">${p.brand || 'نيران قهوة'}</div>
+                            <div class="product-brand">${p.brand || 'نغمة فنجان'}</div>
                             <div class="product-title">${p.title}</div>
                         </div>
                         <div>
@@ -241,7 +241,7 @@
         function openProductModal(index) {
             let p = products[index];
             document.getElementById('modalImg').src = p.image;
-            document.getElementById('modalBrand').innerText = p.brand || 'نيران قهوة';
+            document.getElementById('modalBrand').innerText = p.brand || 'نغمة فنجان';
             document.getElementById('modalTitle').innerText = p.title;
             document.getElementById('modalPrice').innerText = p.price;
             document.getElementById('modalDesc').innerText = p.desc || "لا يوجد وصف إضافي لهذا المنتج حالياً.";
@@ -353,8 +353,8 @@
                 return;
             }
 
-            products.push({ title, category, price, desc: desc || "منتج عالي الجودة من متجر نيران قهوة.", image: tempBase64Image, brand: "نيران قهوة" });
-            localStorage.setItem('niran_products', JSON.stringify(products));
+            products.push({ title, category, price, desc: desc || "منتج عالي الجودة من متجر نغمة فنجان.", image: tempBase64Image, brand: "نغمة فنجان" });
+            localStorage.setItem('nagmat_fingan_products', JSON.stringify(products));
             resetFilter();
             renderAdminList();
             
@@ -372,7 +372,7 @@
         function deleteProduct(index) {
             if(confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
                 products.splice(index, 1);
-                localStorage.setItem('niran_products', JSON.stringify(products));
+                localStorage.setItem('nagmat_fingan_products', JSON.stringify(products));
                 resetFilter();
                 renderAdminList();
             }
